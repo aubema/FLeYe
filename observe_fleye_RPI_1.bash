@@ -44,6 +44,9 @@ take_pictures() {
 globalpos () {
 
      rm -f /root/*.tmp
+     /usr/bin/gpspipe -w -n 2 | sed -e "s/,/\n/g" | grep activated | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" |  sed -e"s/activated//g" | sed -e "s/ //g" > /home/sand/coords.tmp
+     read gpstime < /home/sand/coords.tmp
+	echo "t" $gpstime
      bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lat | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e"s/lat//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
      read lat < /home/sand/coords.tmp
      bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lon | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/lo//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
@@ -87,7 +90,11 @@ generalconfig=$path/FLeYe_general_config
 sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # sync time
 /bin/sleep 10
-/usr/sbin/ntpdate 172.20.4.160   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
+# set master date with the gps
+globalpos
+echo "gpstime="$gpstime $lat $lon $alt
+/usr/bin/date -s "'$gpstime'"
+/usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ]
 then 	echo "Time has synced"
@@ -155,7 +162,7 @@ do 	time1=`/usr/bin/date +%s`
 		read bidon bidon posi bidon < $path/positmp
 		take_pictures "$cam" "$gain" "$ta"
 		# reading gps position
-		#globalpos
+		globalpos
 		gps_list[$n]=$lat"_"$lon"_"$alt
    		yy=`/usr/bin/date +%Y`
    		mo=`/usr/bin/date +%m`
