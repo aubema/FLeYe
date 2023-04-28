@@ -50,7 +50,7 @@ def capture(itime, gain):
         + str(gain)
         + " --shutter "
         + str(itime)
-        + " --denoise off --rawfull --raw --awbgains 1,1 --nopreview -o /home/sand/capture_A.jpg"
+        + " --denoise off  --rawfull --raw --awbgains 1,1 --immediate --nopreview -o /home/sand/capture_A.jpg"
     )
     os.system(cmd)
 
