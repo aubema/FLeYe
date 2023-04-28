@@ -21,7 +21,7 @@ def input(argv):
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print("captureA.py -t <itime> -g <gain>")
+            print("captureD.py -t <itime> -g <gain>")
             sys.exit()
         elif opt in ("-t", "--itime"):
             itime = arg
@@ -31,14 +31,14 @@ def input(argv):
 
 
 def main():
-    print("Start testing the camera A")
+    print("Start testing the camera D")
     itime, gain = input(sys.argv[1:])
     i2c = "i2cset -y 1 0x70 0x00 0x07"
     os.system(i2c)
     gp.output(7, True)
     gp.output(11, True)
     gp.output(12, False)
-    print("Selected integration A : ", itime, "Selected gain : ", gain)
+    print("Selected integration : ", itime, "Selected gain : ", gain)
     capture(1, itime, gain)
 
 

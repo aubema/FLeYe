@@ -38,7 +38,7 @@ def main():
     gp.output(7, False)
     gp.output(11, False)
     gp.output(12, True)
-    print("Selected integration A : ", itime, "Selected gain : ", gain)
+    print("Selected integration : ", itime, "Selected gain : ", gain)
     capture(itime, gain)
 
 
