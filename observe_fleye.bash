@@ -68,7 +68,10 @@ path="/home/"$user
 #==================================
 # wait 2 min to start (enough time for ntp sync)
 echo "Waiting 2 min before starting measurements..."
-/bin/sleep 1
+/bin/sleep 1  #################################################  A CHANGER POUR 120
+
+# ICI FAIRE UN SLEEP SUPPLEMENTAIRE POUR DEMARRER AU DEBUT DE LA PROCHAINE MINUTE
+
 start_date=`date +%Y-%m-%d_%H-%M-%S`
 echo $start_date >> $path/sec_num.txt
 if [ ! -f  $path/image_list.txt ]
@@ -123,7 +126,7 @@ do 	tail -1 $path/image_list.txt > $path/seq_num.tmp
 	cp -f $path"/image_list.txt" $basepath/$yy/$mo/
 	cp -f $path"/image_list.txt" $backpath/$yy/$mo/
 	time2=`date +%s`
-	let idle=40-time2+time1  # one measurement every 40 sec 
+	let idle=60-time2+time1  # one measurement every 60 sec 
 	if [ $idle -lt 0 ] ; then let idle=0; fi
 	echo "Wait " $idle "s before next reading."
 	/bin/sleep $idle
