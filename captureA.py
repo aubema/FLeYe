@@ -39,10 +39,10 @@ def main():
     gp.output(11, False)
     gp.output(12, True)
     print("Selected integration A : ", itime, "Selected gain : ", gain)
-    capture(1, itime, gain)
+    capture(itime, gain)
 
 
-def capture(cam, itime, gain):
+def capture(itime, gain):
     # cmd = "libcamera-hello -t 0"
     path = "/home/sand"
     cmd = (
@@ -50,7 +50,7 @@ def capture(cam, itime, gain):
         + str(gain)
         + " --shutter "
         + str(itime)
-        + " --denoise off --rawfull --raw --awbgains 1,1 --nopreview -o /home/sand/capture_1.jpg"
+        + " --denoise off --rawfull --raw --awbgains 1,1 --nopreview -o /home/sand/capture_A.jpg"
     )
     os.system(cmd)
 
