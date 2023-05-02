@@ -1,3 +1,4 @@
 # general configuration for FLeYe
-DelayUTC	:	4   # time correction to convert local time into UTC e.g. EDT = 4
-SiteLatitde	:	N48.47
+Delay2UTC	:	4   # time correction to convert local time into UTC e.g. EDT = 4
+Latitude	:	N45.4   N48.47
+Longitude	:	W71.8833
