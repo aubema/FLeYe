@@ -62,6 +62,8 @@ backpath="/home/"$user"/data"
 path="/home/"$user
 configfile=$path/FLeYe_RPI_1_config
 generalconfig=$path/FLeYe_general_config
+# sync time
+#ntpdate xxx.xxx.xxx.xxx   # UNCOMMENT AND SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp
@@ -69,22 +71,11 @@ read bidon bidon DUTC bidon < $path/generaltmp
 read bidon bidon LAT bidon < $path/generaltmp
 /usr/bin/grep "Longitude" $generalconfig > $path/generaltmp
 read bidon bidon LON bidon < $path/generaltmp
-
-
 /usr/bin/hdate -s -l $LAT -L $LON -z -$DUTC | /usr/bin/grep sunrise > $path/suntmp
 read bidon value bidon < $path/suntmp
-
-
-echo "rise" $value
-
 sunrise=`date --date="$value $DUTC hours" "+%Y-%m-%dT%H:%M:%S UTC"`
 /usr/bin/hdate -s -l $LAT -L $LON -z -$DUTC | /usr/bin/grep sunset > $path/suntmp
 read bidon value bidon < $path/suntmp
-
-
-echo "set" $value
-
-
 sunset=`/usr/bin/date --date="$value $DUTC hours" "+%Y-%m-%dT%H:%M:%S UTC"`
 echo "Sunset= " $sunset
 echo "Sunrise= " $sunrise
@@ -96,8 +87,6 @@ let ssetbefore=sset-86400
 let ssetafter=sset+86400
 let srisebefore=srise-86400
 let sriseafter=srise+86400
-
-
 yy=`/usr/bin/date +%Y`
 mo=`/usr/bin/date +%m`
 dd=`/usr/bin/date +%d`
@@ -108,8 +97,6 @@ let wait=60-ss		# begin shots at the next minute
 /usr/bin/date
 /usr/bin/echo "Waiting " $wait " seconds"
 /bin/sleep $wait  
-
-
 start_date=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
 /usr/bin/echo $start_date >> $path/sec_num.txt
 if [ ! -f  $path/image_list.txt ]
