@@ -1,8 +1,8 @@
 # input parameters for FLeYe RPI 1
 LensA	:	4mm
 PosiA	:	1
-LensB	:	16mm
-PosiB	:	4
+LensB	:	4mm
+PosiB	:	2
 LensC	:	16mm
 PosiC	:	1
 LensD	:	4mm
