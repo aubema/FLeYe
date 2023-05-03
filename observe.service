@@ -1,5 +1,5 @@
 [Unit]
-Description=Observe NightMon
+Description=Observe FLeYe
 After=network.target
 
 [Service]
@@ -7,10 +7,10 @@ Type=simple
 Restart=always
 RestartSec=1
 User=root
-ExecStart=/bin/bash /usr/local/bin/observe_nightmon.bash
+ExecStart=/bin/bash /usr/local/bin/observe_fleye.bash
 
-StandardOutput=append:/home/sand/nightmon.log
-StandardError=append:/home/sand/nightmon.log
+StandardOutput=append:/home/sand/fleye.log
+StandardError=append:/home/sand/fleye.log
 
 [Install]
 WantedBy=multi-user.target

@@ -22,6 +22,6 @@ then	read oldvol < /home/sand/data/volume.txt
 else	let oldvol=0
 newvol=`du -ms /home/sand/data`
 if [ $newvol -eq $oldvol ] 
-then reboot
+then /usr/sbin/reboot
 fi
-echo $newvol > /home/sand/data/volume.txt
+/usr/bin/echo $newvol > /home/sand/data/volume.txt

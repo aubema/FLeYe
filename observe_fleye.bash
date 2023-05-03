@@ -103,16 +103,8 @@ mo=`/usr/bin/date +%m`
 dd=`/usr/bin/date +%d`
 hh=`/usr/bin/date +%H`
 mm=`/usr/bin/date +%M`
-mm=${mm##+(0)}		# remove leading 0
-if [ "$mm" == "09" ]; then let mm=9; fi   # seem to be a bug with 09???
-let nextmm=mm+1
-if [ $nextmm -lt 10 ]
-then nextmm="0"$nextmm
-fi
-secnow=`/usr/bin/date +%s`
-secnextmin=`/usr/bin/date -d "$yy-$mo-$dd"T"$hh:$nextmm:00 UTC" +%s`
-
-let wait=secnextmin-secnow		# begin shots at the next minute
+ss=`/usr/bin/date +%S`
+let wait=60-ss		# begin shots at the next minute
 /usr/bin/date
 /usr/bin/echo "Waiting " $wait " seconds"
 /bin/sleep $wait  
@@ -183,11 +175,11 @@ do 	time1=`/usr/bin/date +%s`
 	cp -f $path"/image_list.txt" $basepath/$yy/$mo/
 	cp -f $path"/image_list.txt" $backpath/$yy/$mo/
 	# calculate waiting time until next shooting
-	time2=`/usr/bin/date +%s`
-	let idle=60-time2+time1  # one measurement every 60 sec 
+	ss=`/usr/bin/date +%S`
+        let idle=60-ss		# begin shots at the next minute
 	if [ $idle -lt 0 ]
 	then 	let idle=0
-		# ici reboot? Si je ne reussis pas a regler le jam de l acquisition d images
+		/usr/sbin/reboot
 	fi
 	/usr/bin/echo "Wait " $idle "s before next reading."
 	/bin/sleep $idle
