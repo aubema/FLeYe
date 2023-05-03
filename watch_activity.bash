@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 #
 #
 #    Copyright (C) 2023  Martin Aube
@@ -18,10 +18,12 @@
 #
 #    Contact: martin.aube@cegepsherbrooke.qc.ca
 if [ -f /home/sand/data/volume.txt ]
-then	read oldvol < /home/sand/data/volume.txt
+then	read oldvol bidon < /home/sand/data/volume.txt
 else	let oldvol=0
-newvol=`du -ms /home/sand/data`
-if [ $newvol -eq $oldvol ] 
-then /usr/sbin/reboot
 fi
+/usr/bin/du -ms /home/sand/data > /home/sand/data/volumetmp
+read newvol bidon < /home/sand/data/volumetmp
 /usr/bin/echo $newvol > /home/sand/data/volume.txt
+if [ "$newvol" == "$oldvol" ] 
+then echo "reboot" # /usr/sbin/reboot
+fi
