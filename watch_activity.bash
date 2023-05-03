@@ -25,5 +25,5 @@ fi
 read newvol bidon < /home/sand/data/volumetmp
 /usr/bin/echo $newvol > /home/sand/data/volume.txt
 if [ "$newvol" == "$oldvol" ] 
-then echo /usr/sbin/reboot
+then /usr/sbin/reboot
 fi
