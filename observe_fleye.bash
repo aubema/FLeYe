@@ -63,13 +63,13 @@ path="/home/"$user
 configfile=$path/FLeYe_RPI_1_config
 generalconfig=$path/FLeYe_general_config
 # sync time
-#ntpdate xxx.xxx.xxx.xxx   # UNCOMMENT AND SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
-#syncflag=`exit $?`
-#if [ "$syncflag" == "0"]
-#then echo "Time has synced"
-#else echo "Unable to sync time"
-#	date -s '2000-01-01 00:00:00'
-#fi
+ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
+syncflag=`exit $?`
+if [ "$syncflag" == "0"]
+then 	echo "Time has synced"
+else 	echo "Unable to sync time"
+	date -s '2000-01-01 00:00:00'
+fi
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp
@@ -152,11 +152,12 @@ do 	time1=`/usr/bin/date +%s`
 		fi
 		/usr/bin/echo "=============================="
 		# renaming pictures
-		/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$image"_"$secnum".dng"
+		/usr/bin/cp -f $path"/capture_"$cam".dng" $yy/$mo/$image"_"$secnum".dng"
 	    	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$image"_"$secnum".dng"
 		/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$image"_"$secnum".jpg"
 	    	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$image"_"$secnum".jpg"
 		/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam".jpg"
+		/usr/bin/cp -f $path"/small_"$cam".jpg" $basepath/
 		let n=n+1
 	done
 	# flush ram cache to correct a memory leak in the camera library
