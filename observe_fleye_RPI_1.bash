@@ -39,6 +39,27 @@ take_pictures() {
 }
 
 
+# ==================================
+# global positioning system
+globalpos () {
+
+     rm -f /root/*.tmp
+     bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lat | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e"s/lat//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
+     read lat < /home/sand/coords.tmp
+     bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lon | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/lo//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
+     read lon < /home/sand/coords.tmp
+     bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep alt | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/alt//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
+     read alt < /home/sand/coords.tmp
+     echo $lat $lon $alt
+     if [ -z "${lon}" ]
+     then let lon=0
+          let lat=0
+          let alt=0
+     fi 
+     # /bin/echo "GPS gives Latitude:" $lat ", Longitude:" $lon "and Altitude:" $alt
+     /bin/echo "Lat.:" $lat ", Lon.:" $lon " Alt.:" $alt  > /home/sand/gps.log
+     echo $gpsdate > /home/sand/date_gps.log
+}
 
 
 
