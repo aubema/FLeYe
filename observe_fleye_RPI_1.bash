@@ -83,6 +83,8 @@ backpath="/home/"$user"/data"
 path="/home/"$user
 configfile=$path/FLeYe_RPI_1_config
 generalconfig=$path/FLeYe_general_config
+# start gps
+sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # sync time
 ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`exit $?`
@@ -151,6 +153,9 @@ do 	time1=`/usr/bin/date +%s`
 		/usr/bin/grep "Posi"$cam $configfile> $path/positmp
 		read bidon bidon posi bidon < $path/positmp
 		take_pictures "$cam" "$gain" "$ta"
+		# reading gps position
+		globalpos
+		gps_list[$n]=$lat"_"$lon"_"$alt
    		yy=`/usr/bin/date +%Y`
    		mo=`/usr/bin/date +%m`
 		dd=`/usr/bin/date +%d`
@@ -186,7 +191,7 @@ do 	time1=`/usr/bin/date +%s`
 	/usr/bin/echo 3 > /proc/sys/vm/drop_caches
 	let secnum=secnum+1
 	# write data to the image_list.txt file
-	/usr/bin/echo $secnum ${image_list[@]} >> $path/image_list.txt
+	/usr/bin/echo $secnum ${image_list[@]} ${gps_list[@]} >> $path/image_list.txt
 	cp -f $path"/image_list.txt" $basepath/$yy/$mo/
 	cp -f $path"/image_list.txt" $backpath/$yy/$mo/
 	# calculate waiting time until next shooting
