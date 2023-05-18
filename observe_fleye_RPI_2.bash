@@ -65,7 +65,7 @@ generalconfig=$path/FLeYe_general_config
 # sync time
 /usr/sbin/ntpdate 172.20.4.160   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`exit $?`
-if [ "$syncflag" == "0"]
+if [ "$syncflag" == "0" ]
 then 	echo "Time has synced"
 else 	echo "Unable to sync time"
 	date -s '2000-01-01 00:00:00'
