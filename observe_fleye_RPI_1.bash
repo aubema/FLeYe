@@ -86,6 +86,7 @@ generalconfig=$path/FLeYe_general_config
 # start gps
 sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # sync time
+/bin/sleep 10
 /usr/sbin/ntpdate 172.20.4.160   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ]
