@@ -44,8 +44,9 @@ take_pictures() {
 globalpos () {
 
      rm -f /root/*.tmp
-     /usr/bin/gpspipe -w -n 2 | sed -e "s/,/\n/g" | grep activated | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" |  sed -e"s/activated//g" | sed -e "s/ //g" > /home/sand/coords.tmp
+     bash -c '/usr/bin/gpspipe -w -n 2 | sed -e "s/,/\n/g" | grep activated | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" |  sed -e"s/activated//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
      read gpstime < /home/sand/coords.tmp
+     gpstime="${gpstime:1}"
 	echo "t" $gpstime
      bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lat | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e"s/lat//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
      read lat < /home/sand/coords.tmp
@@ -94,12 +95,12 @@ sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 globalpos
 echo "gpstime="$gpstime $lat $lon $alt
 echo "Sync time with gps."
-/usr/bin/date -s "'$gpstime'"
+/usr/bin/date -s $gpstime
 /usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ]
 then 	echo "Time has synced with server"
-else 	echo "Unable to sync time sith server"
+else 	echo "Unable to sync time with server"
 	#date -s '2000-01-01 00:00:00'
 fi
 # determine sunrise and sunset
