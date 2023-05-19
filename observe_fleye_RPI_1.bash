@@ -93,13 +93,14 @@ sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # set master date with the gps
 globalpos
 echo "gpstime="$gpstime $lat $lon $alt
+echo "Sync time with gps."
 /usr/bin/date -s "'$gpstime'"
 /usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ]
-then 	echo "Time has synced"
-else 	echo "Unable to sync time"
-	date -s '2000-01-01 00:00:00'
+then 	echo "Time has synced with server"
+else 	echo "Unable to sync time sith server"
+	#date -s '2000-01-01 00:00:00'
 fi
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
@@ -169,7 +170,7 @@ do 	time1=`/usr/bin/date +%s`
 		dd=`/usr/bin/date +%d`
 		basename=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
 		image=$basename"_"$cam"_"$lens"_"$posi"_"$ta"_"$gain
-		image_list[$n]=$image"_"$secnum
+		image_list[$n]=$secnum"_"$image
 		baseday=`/usr/bin/date +%Y-%m-%d`
 		# create directories
 		if [ ! -d $basepath/$yy ]
@@ -186,10 +187,10 @@ do 	time1=`/usr/bin/date +%s`
 		fi
 		/usr/bin/echo "=============================="
 		# renaming pictures
-		/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$image"_"$secnum".dng"
-	    	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$image"_"$secnum".dng"
-		/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$image"_"$secnum".jpg"
-	    	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$image"_"$secnum".jpg"
+		/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$secnum"_"$image".dng"
+	    	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
+		/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
+	    	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
 		/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam".jpg"
 		/usr/bin/cp -f $path"/small_"$cam".jpg" $basepath/
 		let n=n+1
