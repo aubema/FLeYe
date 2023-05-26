@@ -113,7 +113,7 @@ then 	echo "Time has synced with server"
 else 	echo "Unable to sync time with server"
 	#date -s '2000-01-01 00:00:00'
 fi
-/bin/sleep 140
+/bin/sleep 170
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp

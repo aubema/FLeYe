@@ -63,7 +63,7 @@ path="/home/"$user
 configfile=$path/FLeYe_RPI_3_config
 generalconfig=$path/FLeYe_general_config
 # sync time
-/bin/sleep 270
+/bin/sleep 300
 /usr/sbin/ntpdate 172.20.4.160   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ]
