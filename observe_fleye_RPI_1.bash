@@ -149,8 +149,8 @@ yy=`/usr/bin/date +%Y`
 mo=`/usr/bin/date +%m`
 dd=`/usr/bin/date +%d`
 hh=`/usr/bin/date +%H`
-mm=`/usr/bin/date +%M`
-ss=`/usr/bin/date +%S`
+mm=`/usr/bin/date +%-M`
+ss=`/usr/bin/date +%-S`
 
 let "nextcycle=1+(mm*60+ss)/90" 
 let "wait=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
@@ -242,9 +242,9 @@ do 	time1=`/usr/bin/date +%s`
 	
 	# calculate waiting time until next shooting
 	
-	mm=`/usr/bin/date +%M`
+	mm=`/usr/bin/date +%-M`
 	
-	ss=`/usr/bin/date +%S`
+	ss=`/usr/bin/date +%-S`
 
 	nextcycle=1+(mm*60+ss)/90 
 	let wait=nextcycle*90-(mm*60+ss)	# begin shots at the next cycle of 90 sec
