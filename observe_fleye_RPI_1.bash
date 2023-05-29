@@ -223,7 +223,7 @@ do 	time1=`/usr/bin/date +%s`
 	   	 	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
 	  	  	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
-			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam".jpg"
+			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
 			
