@@ -148,7 +148,7 @@ hh=`/usr/bin/date +%H`
 mm=`/usr/bin/date +%M`
 ss=`/usr/bin/date +%S`
 
-nextcycle=1+(mm*60+ss)/90 
+let nextcycle=1+(mm*60+ss)/90 
 let wait=nextcycle*90-(mm*60+ss)	# begin shots at the next cycle of 90 sec
 
 /usr/bin/date
@@ -244,7 +244,7 @@ do 	time1=`/usr/bin/date +%s`
 
 	nextcycle=1+(mm*60+ss)/90 
 	let wait=nextcycle*90-(mm*60+ss)	# begin shots at the next cycle of 90 sec
-#        let idle=90-ss		# begin shots at the next minute
+#        let idle=60-ss		# begin shots at the next minute
         
 	if [ $idle -lt 0 ]
 	then 	let idle=0
