@@ -104,7 +104,9 @@ generalconfig=$path/FLeYe_general_config
 # start gps
 sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # sync time
-/bin/sleep 120
+
+#/bin/sleep 120
+
 # set master date with the gps
 globalpos
 echo "gpstime="$gpstime $lat $lon $alt
@@ -117,7 +119,9 @@ then 	echo "Time has synced with server"
 else 	echo "Unable to sync time with server"
 	#date -s '2000-01-01 00:00:00'
 fi
-/bin/sleep 170
+
+#/bin/sleep 170
+
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp
@@ -148,8 +152,8 @@ hh=`/usr/bin/date +%H`
 mm=`/usr/bin/date +%M`
 ss=`/usr/bin/date +%S`
 
-let nextcycle=1+(mm*60+ss)/90 
-let wait=nextcycle*90-(mm*60+ss)	# begin shots at the next cycle of 90 sec
+let "nextcycle=1+(mm*60+ss)/90" 
+let "wait=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
 
 /usr/bin/date
 /usr/bin/echo "Waiting " $wait " seconds"
