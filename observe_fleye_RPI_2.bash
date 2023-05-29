@@ -49,9 +49,9 @@ take_pictures() {
 #
 #===================================
 # setting constants
-dayt=20000
-dayg=16
-nightt=20000   		# 1/50s
+dayt=500
+dayg=1
+nightt=50000   		# 1/20s
 nightg=16		# ISO 1600
 user="sand"
 gain=$nightg
@@ -98,9 +98,10 @@ yy=`/usr/bin/date +%Y`
 mo=`/usr/bin/date +%m`
 dd=`/usr/bin/date +%d`
 hh=`/usr/bin/date +%H`
-mm=`/usr/bin/date +%M`
-ss=`/usr/bin/date +%S`
-let wait=60-ss		# begin shots at the next minute
+mm=`/usr/bin/date +%-M`
+ss=`/usr/bin/date +%-S`
+let "nextcycle=1+(mm*60+ss)/90" 
+let "wait=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
 /usr/bin/date
 /usr/bin/echo "Waiting " $wait " seconds"
 /bin/sleep $wait  
@@ -117,61 +118,70 @@ do 	time1=`/usr/bin/date +%s`
 	then 	/usr/bin/echo "day"
 		ta=$dayt
 		gain=$dayg
+		factor=2
 		/usr/bin/echo "You are observing during daytime"
 	else	/usr/bin/echo "night"
 		ta=$nightt
 		gain=$nightg
+		factor=10
 		/usr/bin/echo "You are observig during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
-	let n=0
-	for cam in ${cams[@]}
-	do 	/usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
-		read bidon bidon lens bidon < $path/lenstmp
-		/usr/bin/grep "Posi"$cam $configfile> $path/positmp
-		read bidon bidon posi bidon < $path/positmp
-		take_pictures "$cam" "$gain" "$ta"
-   		yy=`/usr/bin/date +%Y`
-   		mo=`/usr/bin/date +%m`
-		dd=`/usr/bin/date +%d`
-		basename=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
-		image=$basename"_"$cam"_"$lens"_"$posi"_"$ta"_"$gain
-		image_list[$n]=$secnum"_"$image
-		baseday=`/usr/bin/date +%Y-%m-%d`
-		# create directories
-		if [ ! -d $basepath/$yy ]
-		then 	mkdir $basepath/$yy
+	for f in 0 1
+	do	if [ $f -eq 1 ]
+		then let ta=ta/factor
 		fi
-		if [ ! -d $basepath/$yy/$mo ]
-		then 	/bin/mkdir $basepath/$yy/$mo
-		fi
-		if [ ! -d $backpath/$yy ]
-		then 	mkdir $backpath/$yy
-		fi
-		if [ ! -d $backpath/$yy/$mo ]
-		then 	/bin/mkdir $backpath/$yy/$mo
-		fi
-		/usr/bin/echo "=============================="
-		# renaming pictures
-		/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$secnum"_"$image".dng"
-	    	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
-		/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
-	    	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
-		/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam".jpg"
-		/usr/bin/cp -f $path"/small_"$cam".jpg" $basepath/
-		let n=n+1
+		let n=0
+		for cam in ${cams[@]}
+		do 	/usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
+			read bidon bidon lens bidon < $path/lenstmp
+			/usr/bin/grep "Posi"$cam $configfile> $path/positmp
+			read bidon bidon posi bidon < $path/positmp
+			take_pictures "$cam" "$gain" "$ta"
+   			yy=`/usr/bin/date +%Y`
+   			mo=`/usr/bin/date +%m`
+			dd=`/usr/bin/date +%d`
+			basename=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
+			image=$basename"_"$cam"_"$lens"_"$posi"_"$ta"_"$gain
+			image_list[$n]=$secnum"_"$image
+			baseday=`/usr/bin/date +%Y-%m-%d`
+			# create directories
+			if [ ! -d $basepath/$yy ]
+			then 	mkdir $basepath/$yy
+			fi
+			if [ ! -d $basepath/$yy/$mo ]
+			then 	/bin/mkdir $basepath/$yy/$mo
+			fi
+			if [ ! -d $backpath/$yy ]
+			then 	mkdir $backpath/$yy
+			fi
+			if [ ! -d $backpath/$yy/$mo ]
+			then 	/bin/mkdir $backpath/$yy/$mo
+			fi
+			/usr/bin/echo "=============================="
+			# renaming pictures
+			/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$secnum"_"$image".dng"
+	 	   	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
+			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
+	 	   	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
+			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
+			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
+			let n=n+1
+		done
+		# flush ram cache to correct a memory leak in the camera library
+		/usr/bin/sync
+		/usr/bin/echo 3 > /proc/sys/vm/drop_caches
+		let secnum=secnum+1
+		# write data to the image_list.txt file
+		/usr/bin/echo $secnum ${image_list[@]} >> $path/image_list.txt
+		cp -f $path"/image_list.txt" $basepath/$yy/$mo/
+		cp -f $path"/image_list.txt" $backpath/$yy/$mo/
 	done
-	# flush ram cache to correct a memory leak in the camera library
-	/usr/bin/sync
-	/usr/bin/echo 3 > /proc/sys/vm/drop_caches
-	let secnum=secnum+1
-	# write data to the image_list.txt file
-	/usr/bin/echo $secnum ${image_list[@]} >> $path/image_list.txt
-	cp -f $path"/image_list.txt" $basepath/$yy/$mo/
-	cp -f $path"/image_list.txt" $backpath/$yy/$mo/
 	# calculate waiting time until next shooting
-	ss=`/usr/bin/date +%S`
-        let idle=60-ss		# begin shots at the next minute
+	mm=`/usr/bin/date +%-M`
+	ss=`/usr/bin/date +%-S`
+	let "nextcycle=1+(mm*60+ss)/90" 
+	let "idle=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
 	if [ $idle -lt 0 ]
 	then 	let idle=0
 		/usr/sbin/reboot

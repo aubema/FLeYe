@@ -149,9 +149,9 @@ yy=`/usr/bin/date +%Y`
 mo=`/usr/bin/date +%m`
 dd=`/usr/bin/date +%d`
 hh=`/usr/bin/date +%H`
+
 mm=`/usr/bin/date +%-M`
 ss=`/usr/bin/date +%-S`
-
 let "nextcycle=1+(mm*60+ss)/90" 
 let "wait=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
 
@@ -171,12 +171,16 @@ do 	time1=`/usr/bin/date +%s`
 	then 	/usr/bin/echo "day"
 		ta=$dayt
 		gain=$dayg
+		
 		factor=2
+		
 		/usr/bin/echo "You are observing during daytime"
 	else	/usr/bin/echo "night"
 		ta=$nightt
 		gain=$nightg
+		
 		factor=10
+		
 		/usr/bin/echo "You are observig during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
@@ -223,8 +227,8 @@ do 	time1=`/usr/bin/date +%s`
 	   	 	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
 	  	  	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
-			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
-			
+	  	  	
+	  	  	/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
 			
 			let n=n+1
@@ -243,9 +247,7 @@ do 	time1=`/usr/bin/date +%s`
 	# calculate waiting time until next shooting
 	
 	mm=`/usr/bin/date +%-M`
-	
 	ss=`/usr/bin/date +%-S`
-
 	let "nextcycle=1+(mm*60+ss)/90" 
 	let "idle=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
 #        let idle=60-ss		# begin shots at the next minute
