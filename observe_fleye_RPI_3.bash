@@ -71,6 +71,15 @@ then 	echo "Time has synced with master"
 else 	echo "Unable to sync time with master"
 	date -s '2000-01-01 00:00:00'
 fi
+# if time is earlier than the latest time used take the latest. 
+# The time will not be correctly set but at least will be later than other experiments.
+# read last time used
+read lastdate bidon < $path/lastdate.txt
+sec3=`/usr/bin/date +%s`
+sec4=`/usr/bin/date -d "$lastdate" +%s`
+if [ $sec4 -gt $sec3 ] ; then 
+	/usr/bin/date -s $lastdate
+fi
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp
@@ -131,13 +140,14 @@ do 	time1=`/usr/bin/date +%s`
 		fi
 		let n=0
 		for cam in ${cams[@]}
-		do 	/usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
+		do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
 			read bidon bidon lens bidon < $path/lenstmp
 			/usr/bin/grep "Posi"$cam $configfile> $path/positmp
 			read bidon bidon posi bidon < $path/positmp
+			/usr/bin/date +%Y-%m-%dT%H:%M:%S > $path/lastdate.txt
 			take_pictures "$cam" "$gain" "$ta"
-   			yy=`/usr/bin/date +%Y`
-   			mo=`/usr/bin/date +%m`
+   		yy=`/usr/bin/date +%Y`
+   		mo=`/usr/bin/date +%m`
 			dd=`/usr/bin/date +%d`
 			basename=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
 			image=$basename"_"$cam"_"$lens"_"$posi"_"$ta"_"$gain

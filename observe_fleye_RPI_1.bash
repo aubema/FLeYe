@@ -86,11 +86,8 @@ globalpos () {
 # setting constants
 
 dayt=500
-
 dayg=1
-
 nightt=50000   		# 1/20s
-
 nightg=16		# ISO 1600
 user="sand"
 gain=$nightg
@@ -106,7 +103,6 @@ sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # sync time
 
 /bin/sleep 120
-
 # set master date with the gps
 globalpos
 echo "gpstime="$gpstime $lat $lon $alt
@@ -119,9 +115,16 @@ then 	echo "Time has synced with server"
 else 	echo "Unable to sync time with server"
 	#date -s '2000-01-01 00:00:00'
 fi
-
+# if time is earlier than the latest time used take the latest. 
+# The time will not be correctly set but at least will be later than other experiments.
+# read last time used
+read lastdate bidon < $path/lastdate.txt
+sec3=`/usr/bin/date +%s`
+sec4=`/usr/bin/date -d "$lastdate" +%s`
+if [ $sec4 -gt $sec3 ] ; then 
+	/usr/bin/date -s $lastdate
+fi
 /bin/sleep 170
-
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp
@@ -149,12 +152,10 @@ yy=`/usr/bin/date +%Y`
 mo=`/usr/bin/date +%m`
 dd=`/usr/bin/date +%d`
 hh=`/usr/bin/date +%H`
-
 mm=`/usr/bin/date +%-M`
 ss=`/usr/bin/date +%-S`
 let "nextcycle=1+(mm*60+ss)/90" 
 let "wait=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
-
 /usr/bin/date
 /usr/bin/echo "Waiting " $wait " seconds"
 /bin/sleep $wait  
@@ -171,38 +172,32 @@ do 	time1=`/usr/bin/date +%s`
 	then 	/usr/bin/echo "day"
 		ta=$dayt
 		gain=$dayg
-		
 		factor=2
-		
 		/usr/bin/echo "You are observing during daytime"
 	else	/usr/bin/echo "night"
 		ta=$nightt
 		gain=$nightg
-		
 		factor=10
-		
 		/usr/bin/echo "You are observig during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
-	
 	for f in 0 1
 	do	if [ $f -eq 1 ]
 		then let ta=ta/factor
 		fi
-
-		
 		let n=0
-           	for cam in ${cams[@]}
-	   	do 	/usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
+		for cam in ${cams[@]}
+	   do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
 			read bidon bidon lens bidon < $path/lenstmp
 			/usr/bin/grep "Posi"$cam $configfile> $path/positmp
 			read bidon bidon posi bidon < $path/positmp
 			take_pictures "$cam" "$gain" "$ta"
+			/usr/bin/date +%Y-%m-%dT%H:%M:%S > $path/lastdate.txt
 			# reading gps position
 			globalpos
 			gps_list[$n]=$lat"_"$lon"_"$alt
-   			yy=`/usr/bin/date +%Y`
-   			mo=`/usr/bin/date +%m`
+   		yy=`/usr/bin/date +%Y`
+   		mo=`/usr/bin/date +%m`
 			dd=`/usr/bin/date +%d`
 			basename=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
 			image=$basename"_"$cam"_"$lens"_"$posi"_"$ta"_"$gain
@@ -230,7 +225,6 @@ do 	time1=`/usr/bin/date +%s`
 	  	  	
 	  	  	/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
-			
 			let n=n+1
 		done
 		# flush ram cache to correct a memory leak in the camera library
@@ -241,17 +235,12 @@ do 	time1=`/usr/bin/date +%s`
 		/usr/bin/echo $secnum ${image_list[@]} ${gps_list[@]} >> $path/image_list.txt
 		cp -f $path"/image_list.txt" $basepath/$yy/$mo/
 		cp -f $path"/image_list.txt" $backpath/$yy/$mo/
-	
 	done
-	
 	# calculate waiting time until next shooting
-	
 	mm=`/usr/bin/date +%-M`
 	ss=`/usr/bin/date +%-S`
 	let "nextcycle=1+(mm*60+ss)/90" 
 	let "idle=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
-#        let idle=60-ss		# begin shots at the next minute
-        
 	if [ $idle -lt 0 ]
 	then 	let idle=0
 		/usr/sbin/reboot
