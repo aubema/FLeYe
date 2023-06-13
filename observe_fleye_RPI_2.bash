@@ -49,7 +49,7 @@ take_pictures() {
 #
 #===================================
 # setting constants
-dayt=500
+dayt=1500
 dayg=1
 nightt=50000   		# 1/20s
 nightg=16		# ISO 1600
