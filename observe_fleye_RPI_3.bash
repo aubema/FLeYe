@@ -127,11 +127,13 @@ do 	time1=`/usr/bin/date +%s`
 	then 	/usr/bin/echo "day"
 		ta=$dayt
 		gain=$dayg
+		factor=2
 		/usr/bin/echo "You are observing during daytime"
 	else	/usr/bin/echo "night"
 		ta=$nightt
 		gain=$nightg
-		/usr/bin/echo "You are observig during nighttime"
+		factor=10
+		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
 	for f in 0 1
