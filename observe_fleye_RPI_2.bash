@@ -133,7 +133,7 @@ do 	time1=`/usr/bin/date +%s`
 		ta=$nightt
 		gain=$nightg
 		factor=10
-		/usr/bin/echo "You are observig during nighttime"
+		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
 	for f in 0 1
@@ -171,9 +171,9 @@ do 	time1=`/usr/bin/date +%s`
 			/usr/bin/echo "=============================="
 			# renaming pictures
 			/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$secnum"_"$image".dng"
-	 	   	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
+			/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
-	 	   	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
+			/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
 			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
 			let n=n+1

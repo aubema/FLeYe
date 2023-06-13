@@ -101,7 +101,6 @@ generalconfig=$path/FLeYe_general_config
 # start gps
 sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # sync time
-
 /bin/sleep 120
 # set master date with the gps
 globalpos
@@ -178,7 +177,7 @@ do 	time1=`/usr/bin/date +%s`
 		ta=$nightt
 		gain=$nightg
 		factor=10
-		/usr/bin/echo "You are observig during nighttime"
+		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
 	for f in 0 1
@@ -187,7 +186,7 @@ do 	time1=`/usr/bin/date +%s`
 		fi
 		let n=0
 		for cam in ${cams[@]}
-	   do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
+		do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
 			read bidon bidon lens bidon < $path/lenstmp
 			/usr/bin/grep "Posi"$cam $configfile> $path/positmp
 			read bidon bidon posi bidon < $path/positmp
@@ -219,11 +218,10 @@ do 	time1=`/usr/bin/date +%s`
 			/usr/bin/echo "=============================="
 			# renaming pictures
 			/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$secnum"_"$image".dng"
-	   	 	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
+			/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
-	  	  	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
-	  	  	
-	  	  	/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
+			/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
+			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
 			let n=n+1
 		done

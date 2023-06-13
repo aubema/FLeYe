@@ -51,7 +51,7 @@ take_pictures() {
 # setting constants
 dayt=500
 dayg=1
-nightt=50000   		# 1/50s
+nightt=50000   		# 1/20s
 nightg=16		# ISO 1600
 user="sand"
 gain=$nightg
@@ -153,7 +153,7 @@ do 	time1=`/usr/bin/date +%s`
 			dd=`/usr/bin/date +%d`
 			basename=`/usr/bin/date +%Y-%m-%d_%H-%M-%S`
 			image=$basename"_"$cam"_"$lens"_"$posi"_"$ta"_"$gain
-			image_list[$n]=$image"_"$secnum
+			image_list[$n]=$secnum"_"$image
 			baseday=`/usr/bin/date +%Y-%m-%d`
 			# create directories
 			if [ ! -d $basepath/$yy ]
@@ -171,10 +171,10 @@ do 	time1=`/usr/bin/date +%s`
 			/usr/bin/echo "=============================="
 			# renaming pictures
 			/usr/bin/cp -f $path"/capture_"$cam".dng" $basepath/$yy/$mo/$secnum"_"$image".dng"
-	 	   	/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
+			/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
-	   	 	/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
-	  	  	/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
+			/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
+			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
 			let n=n+1
 		done
