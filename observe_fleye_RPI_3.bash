@@ -140,7 +140,7 @@ do 	time1=`/usr/bin/date +%s`
 		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
-	for f in 1 2 3
+	for f in 0 1 2
 	do	let factor=(2*fstop)**f
 		let ta=tai/factor
 		let n=0
