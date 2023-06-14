@@ -84,10 +84,9 @@ globalpos () {
 #
 #===================================
 # setting constants
-
-dayt=1500
+dayt=2000
 dayg=1
-nightt=50000   		# 1/20s
+nightt=128000   		# 0.128s
 nightg=16		# ISO 1600
 user="sand"
 gain=$nightg
@@ -100,30 +99,31 @@ configfile=$path/FLeYe_RPI_1_config
 generalconfig=$path/FLeYe_general_config
 # start gps
 sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
-# sync time
-/bin/sleep 120
+# wait for gps to start
+/bin/sleep 230
 # set master date with the gps
 globalpos
 echo "gpstime="$gpstime $lat $lon $alt
 echo "Sync time with gps."
 /usr/bin/date -s $gpstime
+# set time with CSA ntp server
 /usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 syncflag=`echo $?`
-if [ $syncflag -eq 0 ]
-then 	echo "Time has synced with server"
-else 	echo "Unable to sync time with server"
-	#date -s '2000-01-01 00:00:00'
+if [ $syncflag -eq 0 ] ; then
+	echo "Time has synced with server"
+else
+	echo "Unable to sync time with server"
+	# if time is earlier than the latest time used take the latest. 
+	# The time will not be correctly set but at least will be later than other experiments.
+	# read last time used
+	read lastdate bidon < $path/lastdate.txt
+	sec3=`/usr/bin/date +%s`
+	sec4=`/usr/bin/date -d "$lastdate" +%s`
+	if [ $sec4 -gt $sec3 ] ; then 
+		/usr/bin/date -s $lastdate
+	fi
 fi
-# if time is earlier than the latest time used take the latest. 
-# The time will not be correctly set but at least will be later than other experiments.
-# read last time used
-read lastdate bidon < $path/lastdate.txt
-sec3=`/usr/bin/date +%s`
-sec4=`/usr/bin/date -d "$lastdate" +%s`
-if [ $sec4 -gt $sec3 ] ; then 
-	/usr/bin/date -s $lastdate
-fi
-/bin/sleep 170
+/bin/sleep 60
 # determine sunrise and sunset
 /usr/bin/grep "Delay2UTC" $generalconfig > $path/generaltmp
 read bidon bidon DUTC bidon < $path/generaltmp
@@ -153,8 +153,8 @@ dd=`/usr/bin/date +%d`
 hh=`/usr/bin/date +%H`
 mm=`/usr/bin/date +%-M`
 ss=`/usr/bin/date +%-S`
-let "nextcycle=1+(mm*60+ss)/90" 
-let "wait=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
+let "nextcycle=1+(mm*60+ss)/120" 
+let "wait=nextcycle*120-(mm*60+ss)"	# begin shots at the next cycle of 120 sec
 /usr/bin/date
 /usr/bin/echo "Waiting " $wait " seconds"
 /bin/sleep $wait  
@@ -169,21 +169,20 @@ do 	time1=`/usr/bin/date +%s`
 	read secnum bidon < $path/seq_num.tmp
 	if [[ $time1 -lt $sset  &&  $time1 -ge $srise ]] || [[ $time1 -lt $ssetbefore  &&  $time1 -ge $srisebefore ]] || [[ $time1 -lt $ssetafter &&  $time1 -ge $sriseafter ]]
 	then 	/usr/bin/echo "day"
-		ta=$dayt
+		tai=$dayt
 		gain=$dayg
-		factor=2
+		fstop=2
 		/usr/bin/echo "You are observing during daytime"
 	else	/usr/bin/echo "night"
-		ta=$nightt
+		tai=$nightt
 		gain=$nightg
-		factor=10
+		fstop=3
 		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
-	for f in 0 1
-	do	if [ $f -eq 1 ]
-		then let ta=ta/factor
-		fi
+	for f in 1 2 3
+	do	let factor=(2*fstop)**f
+		let ta=tai/fstop
 		let n=0
 		for cam in ${cams[@]}
 		do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
@@ -237,8 +236,8 @@ do 	time1=`/usr/bin/date +%s`
 	# calculate waiting time until next shooting
 	mm=`/usr/bin/date +%-M`
 	ss=`/usr/bin/date +%-S`
-	let "nextcycle=1+(mm*60+ss)/90" 
-	let "idle=nextcycle*90-(mm*60+ss)"	# begin shots at the next cycle of 90 sec
+	let "nextcycle=1+(mm*60+ss)/120" 
+	let "idle=nextcycle*120-(mm*60+ss)"	# begin shots at the next cycle of 120 sec
 	if [ $idle -lt 0 ]
 	then 	let idle=0
 		/usr/sbin/reboot
