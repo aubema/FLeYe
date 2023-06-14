@@ -66,7 +66,7 @@ generalconfig=$path/FLeYe_general_config
 /bin/sleep 300
 #/usr/sbin/ntpdate 172.20.4.160   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
 # sync time with the master time
-sudo -u sand sand@master date "+%Y-%m-%dT%H:%M:%S" > $path/master_time.txt
+sudo -u sand ssh sand@master date "+%Y-%m-%dT%H:%M:%S" > $path/master_time.txt
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ] ; then
 	read now bidon < $path/master_time.txt
