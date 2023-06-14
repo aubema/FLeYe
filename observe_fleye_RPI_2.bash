@@ -142,7 +142,7 @@ do 	time1=`/usr/bin/date +%s`
 	/usr/bin/echo "Shooting..."
 	for f in 1 2 3
 	do	let factor=(2*fstop)**f
-		let ta=tai/fstop
+		let ta=tai/factor
 		let n=0
 		for cam in ${cams[@]}
 		do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
