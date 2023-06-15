@@ -72,7 +72,7 @@ globalpos () {
      fi 
      # /bin/echo "GPS gives Latitude:" $lat ", Longitude:" $lon "and Altitude:" $alt
      /bin/echo "Lat.:" $lat ", Lon.:" $lon " Alt.:" $alt  > /home/sand/gps.log
-     echo $gpsdate > /home/sand/date_gps.log
+     echo $gpstime > /home/sand/date_gps.log
 }
 
 
