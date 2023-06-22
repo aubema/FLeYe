@@ -180,7 +180,7 @@ do 	time1=`/usr/bin/date +%s`
 	fi
 	/usr/bin/echo "Shooting..."
 	for f in 0 1 2
-	do	let factor=(2*fstop)**f
+	do	let factor=(2**fstop)**f
 		let ta=tai/factor
 		let n=0
 		for cam in ${cams[@]}
