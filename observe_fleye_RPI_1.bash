@@ -41,7 +41,7 @@ take_pictures() {
 
 # ==================================
 # global positioning system
-globalpos () {
+globaltime () {
 
      rm -f /root/*.tmp
      bash -c '/usr/bin/gpspipe -w -n 2 | sed -e "s/,/\n/g" | grep activated | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" |  sed -e"s/activated//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
@@ -58,6 +58,14 @@ globalpos () {
      else gpstime=$gpstime2
      fi
      echo $gpstime
+     echo $gpstime > /home/sand/date_gps.log
+}
+
+# ==================================
+# global positioning system
+globalpos () {
+
+     rm -f /root/*.tmp
      bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lat | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e"s/lat//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
      read lat < /home/sand/coords.tmp
      bash -c '/usr/bin/gpspipe -w -n 5 | sed -e "s/,/\n/g" | grep lon | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/lo//g" | sed -e "s/ //g" > /home/sand/coords.tmp'
@@ -72,9 +80,7 @@ globalpos () {
      fi 
      # /bin/echo "GPS gives Latitude:" $lat ", Longitude:" $lon "and Altitude:" $alt
      /bin/echo "Lat.:" $lat ", Lon.:" $lon " Alt.:" $alt  > /home/sand/gps.log
-     echo $gpstime > /home/sand/date_gps.log
 }
-
 
 
 #
@@ -108,7 +114,7 @@ sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # set master date with the gps
 nanswer=`gpspipe -w -n 4 -x 2 | wc -l`
 if [ $nanswer -eq 4 ] ; then
-	globalpos
+	globaltime
 fi
 echo "gpstime="$gpstime $lat $lon $alt
 echo "Sync time with gps."
