@@ -106,7 +106,7 @@ sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # wait for gps to start
 /bin/sleep 290
 # set master date with the gps
-nanswer=`gpspipe -w -n 4 -x 2`
+nanswer=`gpspipe -w -n 4 -x 2 | wc -l`
 if [ $nanswer -eq 4 ] ; then
 	globalpos
 fi
@@ -198,7 +198,7 @@ do 	time1=`/usr/bin/date +%s`
 			take_pictures "$cam" "$gain" "$ta"
 			/usr/bin/date +%Y-%m-%dT%H:%M:%S > $path/lastdate.txt
 			# reading gps position
-			nanswer=`gpspipe -w -n 4 -x 2`
+			nanswer=`gpspipe -w -n 4 -x 2 | wc -l`
 			if [ $nanswer -eq 4 ] ; then
 				globalpos
 			fi
