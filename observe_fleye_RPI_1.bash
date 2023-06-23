@@ -197,6 +197,7 @@ do 	time1=`/usr/bin/date +%s`
 	do	let factor=(2**fstop)**f
 		let ta=tai/factor
 		let n=0
+		
 		for cam in ${cams[@]}
 		do /usr/bin/grep "Lens"$cam $configfile > $path/lenstmp
 			read bidon bidon lens bidon < $path/lenstmp
@@ -205,7 +206,7 @@ do 	time1=`/usr/bin/date +%s`
 			take_pictures "$cam" "$gain" "$ta"
 			/usr/bin/date +%Y-%m-%dT%H:%M:%S > $path/lastdate.txt
 			# reading gps position
-			nanswer=`gpspipe -w -n 4 -x 2 | wc -l`
+			nanswer=`gpspipe -w -n 4 -x 1 | wc -l`
 			if [ $nanswer -eq 4 ] ; then
 				globalpos
 			fi
