@@ -89,6 +89,10 @@ dayg=1
 nightt=128000   		# 0.128s
 nightg=16		# ISO 1600
 user="sand"
+lat=0
+lon=0
+alt=0
+gpstime="nan"
 gain=$nightg
 ta=$nightt
 cams=(A B C D)
@@ -102,7 +106,10 @@ sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # wait for gps to start
 /bin/sleep 290
 # set master date with the gps
-globalpos
+nanswer=`gpspipe -w -n 4 -x 2`
+if [ $nanswer -eq 4 ] ; then
+	globalpos
+fi
 echo "gpstime="$gpstime $lat $lon $alt
 echo "Sync time with gps."
 /usr/bin/date -s $gpstime
@@ -191,7 +198,10 @@ do 	time1=`/usr/bin/date +%s`
 			take_pictures "$cam" "$gain" "$ta"
 			/usr/bin/date +%Y-%m-%dT%H:%M:%S > $path/lastdate.txt
 			# reading gps position
-			globalpos
+			nanswer=`gpspipe -w -n 4 -x 2`
+			if [ $nanswer -eq 4 ] ; then
+				globalpos
+			fi
 			gps_list[$n]=$lat"_"$lon"_"$alt
    		yy=`/usr/bin/date +%Y`
    		mo=`/usr/bin/date +%m`
