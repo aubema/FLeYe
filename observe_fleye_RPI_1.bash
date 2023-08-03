@@ -111,7 +111,7 @@ generalconfig=$path/FLeYe_general_config
 # start gps
 sudo gpsd /dev/serial0 -F /var/run/gpsd.sock
 # wait for gps to start
-/bin/sleep 290
+/bin/sleep 270
 # set master date with the gps
 nanswer=`gpspipe -w -n 4 -x 2 | wc -l`
 if [ $nanswer -eq 4 ] ; then
@@ -121,7 +121,7 @@ echo "gpstime="$gpstime $lat $lon $alt
 echo "Sync time with gps."
 /usr/bin/date -s $gpstime
 # set time with CSA ntp server
-/usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: MASTER IP FOR THE SLAVE AND GONDOLA NTP IP FOR THE MASTER
+/usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: GONDOLA NTP IP
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ] ; then
 	echo "Time has synced with server"
