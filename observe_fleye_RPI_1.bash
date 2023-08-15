@@ -71,7 +71,7 @@ globalpos () {
      read lat < /home/sand/coords.tmp
      cat /home/sand/5sentences.tmp | sed -e "s/,/\n/g" | grep lon | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/lo//g" | sed -e "s/ //g" > /home/sand/coords.tmp
      read lon < /home/sand/coords.tmp
-     cat /home/sand/5sentences.tmp | sed -e "s/,/\n/g" | grep alt | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/alt//g" | sed -e "s/ //g" > /home/sand/coords.tmp
+     cat /home/sand/5sentences.tmp | sed -e "s/,/\n/g" | grep '"alt"' | tail -1 | sed "s/n\"/ /g" |sed -e "s/\"/ /g" | sed -e "s/:/ /g" | sed -e "s/alt//g" | sed -e "s/ //g" > /home/sand/coords.tmp
      read alt < /home/sand/coords.tmp
      echo $lat $lon $alt
      if [ -z "${lon}" ]
@@ -121,6 +121,7 @@ echo "gpstime="$gpstime $lat $lon $alt
 echo "Sync time with gps."
 /usr/bin/date -s $gpstime
 # set time with CSA ntp server
+systemctl stop ntp
 /usr/sbin/ntpdate 172.20.4.230   # SET THE RIGHT IP HERE: GONDOLA NTP IP
 syncflag=`echo $?`
 if [ $syncflag -eq 0 ] ; then
@@ -193,6 +194,10 @@ do 	time1=`/usr/bin/date +%s`
 		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
+
+        # clean last_images folder
+        rm -f /home/sand/last_images/*
+
 	for f in 0 1 2
 	do	let factor=(2**fstop)**f
 		let ta=tai/factor
@@ -237,6 +242,10 @@ do 	time1=`/usr/bin/date +%s`
 			/usr/bin/cp -f $path"/capture_"$cam".dng" $backpath/$yy/$mo/$secnum"_"$image".dng"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $basepath/$yy/$mo/$secnum"_"$image".jpg"
 			/usr/bin/cp -f $path"/capture_"$cam".jpg" $backpath/$yy/$mo/$secnum"_"$image".jpg"
+
+                        # copying last images to folder on root for quick ls lookup
+                        /usr/bin/cp -f $path"/capture_"$cam".jpg" /home/sand/last_images/$secnum"_"$image".jpg"
+
 			/usr/bin/convert $path"/capture_"$cam".jpg" -resize 1080 $path"/small_"$cam"_"$f".jpg"
 			/usr/bin/cp -f $path"/small_"$cam"_"$f".jpg" $basepath/
 			let n=n+1
@@ -246,7 +255,8 @@ do 	time1=`/usr/bin/date +%s`
 		/usr/bin/echo 3 > /proc/sys/vm/drop_caches
 		let secnum=secnum+1
 		# write data to the image_list.txt file
-		/usr/bin/echo $secnum ${image_list[@]} ${gps_list[@]} >> $path/image_list.txt
+		sensors | grep temp1 > toto; read bidon temp bidon < toto;temperature=`echo $temp | sed 's/°C//'`
+		/usr/bin/echo $secnum ${image_list[@]} ${gps_list[@]} $temperature >> $path/image_list.txt
 		cp -f $path"/image_list.txt" $basepath/$yy/$mo/
 		cp -f $path"/image_list.txt" $backpath/$yy/$mo/
 	done
