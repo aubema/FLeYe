@@ -136,7 +136,7 @@ do 	time1=`/usr/bin/date +%s`
 	else	/usr/bin/echo "night"
 		tai=$nightt
 		gain=$nightg
-		fstop=2
+		fstop=3
 		/usr/bin/echo "You are observing during nighttime"
 	fi
 	/usr/bin/echo "Shooting..."
